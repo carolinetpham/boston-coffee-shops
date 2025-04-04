@@ -7,7 +7,7 @@ const libraries: Libraries = ["places", "drawing", "geometry"];
 
 const mapContainerStyle = {
   width: "100%",
-  height: "100vh", // Adjust as needed
+  height: "400px", 
 };
 
 const defaultCenter = {
@@ -36,7 +36,7 @@ export function MapProvider({ children }: { children: ReactNode }) {
       center={defaultCenter}
       zoom={12}
       onLoad={onLoad}
-      mapTypeId="roadmap" // Ensures it's the default map view
+      mapTypeId="roadmap" 
     >
       {children}
     </GoogleMap>

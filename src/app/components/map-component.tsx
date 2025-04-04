@@ -1,44 +1,145 @@
-/*Since the map was loaded on client side, 
-we need to make this component client rendered as well*/
 "use client";
+import { useEffect, useState } from "react";
+import { GoogleMap, MarkerF, InfoWindowF } from "@react-google-maps/api";
 
-//Map component Component from library
-import { GoogleMap } from "@react-google-maps/api";
+interface CoffeeShop {
+  name: string;
+  location: google.maps.LatLngLiteral;
+}
 
-//Map's styling
-const defaultMapContainerStyle = {
-  width: "100%",
-  height: "100vh",
-  borderRadius: "15px 0px 0px 15px",
-};
+export function MapComponent() {
+  const [userLocation, setUserLocation] =
+    useState<google.maps.LatLngLiteral | null>(null);
+  const [shops, setShops] = useState<CoffeeShop[]>([]);
+  const [selectedShop, setSelectedShop] = useState<CoffeeShop | null>(null);
 
-const defaultMapCenter = {
-  lat: 42.3555, // Default to Boston
-  lng: -71.0565,
-};
+  useEffect(() => {
+    if (!window.google || !navigator.geolocation) return;
 
-//Default zoom level, can be adjusted
-const defaultMapZoom = 14;
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const currentLocation = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        };
+        setUserLocation(currentLocation);
 
-//Map options
-const defaultMapOptions = {
-  zoomControl: true,
-  tilt: 0,
-  gestureHandling: "auto",
-  mapTypeId: "roadmap",
-};
+        const map = new google.maps.Map(document.createElement("div"));
+        const service = new google.maps.places.PlacesService(map);
 
-const MapComponent = () => {
+        const keywords = ["coffee", "cafe", "caffe", "caffè, cafè"];
+        const uniqueResults = new Map<string, CoffeeShop>();
+        let completedCalls = 0;
+
+        keywords.forEach((keyword) => {
+          service.nearbySearch(
+            {
+              location: currentLocation,
+              radius: 3000,
+              keyword,
+              type: "cafe",
+            },
+            (results, status) => {
+              if (
+                status === google.maps.places.PlacesServiceStatus.OK &&
+                results
+              ) {
+                results.forEach((place) => {
+                  if (!uniqueResults.has(place.place_id!)) {
+                    uniqueResults.set(place.place_id!, {
+                      name: place.name!,
+                      location: {
+                        lat: place.geometry?.location?.lat() ?? 0,
+                        lng: place.geometry?.location?.lng() ?? 0,
+                      },
+                    });
+                  }
+                });
+              }
+
+              completedCalls++;
+              if (completedCalls === keywords.length) {
+                setShops(Array.from(uniqueResults.values()));
+              }
+            }
+          );
+        });
+      },
+      (error) => {
+        console.error("Error getting user location:", error);
+      }
+    );
+  }, []);
+
   return (
-    <div className="w-full">
-      <GoogleMap
-        mapContainerStyle={defaultMapContainerStyle}
-        center={defaultMapCenter}
-        zoom={defaultMapZoom}
-        options={defaultMapOptions}
-      ></GoogleMap>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        width: "100%",
+        overflowY: "auto",
+        backgroundColor: "#fff",
+      }}
+    >
+      {/* Map Section */}
+      <div style={{ height: "400px", width: "100%" }}>
+        {userLocation && (
+          <GoogleMap
+            center={userLocation}
+            zoom={14}
+            mapContainerStyle={{ width: "100%", height: "100%" }}
+          >
+            {/* User Location */}
+            <MarkerF
+              position={userLocation}
+              icon={{
+                url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+              }}
+            />
+
+            {/* Cafes */}
+            {shops.map((shop, i) => (
+              <MarkerF
+                key={i}
+                position={shop.location}
+                title={shop.name}
+                onClick={() => setSelectedShop(shop)}
+              />
+            ))}
+
+            {selectedShop && (
+              <InfoWindowF
+                position={selectedShop.location}
+                onCloseClick={() => setSelectedShop(null)}
+              >
+                <div>
+                  <h3 style={{ margin: 0 }}>{selectedShop.name}</h3>
+                </div>
+              </InfoWindowF>
+            )}
+          </GoogleMap>
+        )}
+      </div>
+
+      {/* List Section */}
+      <div className="p-4 bg-white">
+        <h2 className="text-xl font-bold text-black mb-2">Nearby Cafes</h2>
+        <ul className="space-y-2">
+          {shops.length === 0 ? (
+            <li className="text-black">Still loading...</li>
+          ) : (
+            shops.map((shop, i) => (
+              <li
+                key={i}
+                className="p-3 rounded shadow cursor-pointer"
+                onClick={() => setSelectedShop(shop)}
+              >
+                {shop.name}
+              </li>
+            ))
+          )}
+        </ul>
+      </div>
     </div>
   );
-};
-
-export { MapComponent };
+}
