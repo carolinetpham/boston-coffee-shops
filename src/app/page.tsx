@@ -3,16 +3,12 @@ import { MapProvider } from "./providers/MapProvider";
 import { MapComponent } from "./components/MapComponent";
 import CoffeeShopList from "./components/CoffeeShopList";
 import { useEffect, useState } from "react";
+import CoffeeShopDetails from "./components/CoffeeShopDetails";
+import { CoffeeShop } from "./types";
 
 export default function Home() {
-  interface CoffeeShop {
-    name: string;
-    location: google.maps.LatLngLiteral;
-  }
-
   const [selectedShop, setSelectedShop] = useState<CoffeeShop | null>(null);
   const [shops, setShops] = useState<CoffeeShop[]>([]);
-
   const [userLocation, setUserLocation] =
     useState<google.maps.LatLngLiteral | null>(null);
 
@@ -39,8 +35,11 @@ export default function Home() {
       <h1 className="text-3xl font-bold mb-4 text-center">
         Boston Coffee Shops
       </h1>
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="flex-1">
+
+      {/* Map + List Side-by-Side */}
+      <div className="flex flex-col md:flex-row gap-6">
+        {/* Map */}
+        <div className="w-full md:w-2/3">
           <MapProvider>
             <MapComponent
               shops={shops}
@@ -50,7 +49,9 @@ export default function Home() {
             />
           </MapProvider>
         </div>
-        <div className="w-full md:w-1/3">
+
+        {/* Cafe List */}
+        <div className="w-full md:w-1/3 md:h-[400px] md:sticky md:top-24 overflow-y-auto">
           {userLocation && (
             <CoffeeShopList
               shops={shops}
@@ -59,6 +60,11 @@ export default function Home() {
             />
           )}
         </div>
+      </div>
+
+      {/* Shop Details Below */}
+      <div className="w-full mt-6">
+        <CoffeeShopDetails shop={selectedShop} />
       </div>
     </div>
   );

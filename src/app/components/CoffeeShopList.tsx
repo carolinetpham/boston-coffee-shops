@@ -1,10 +1,6 @@
 // CoffeeShopList.tsx
 import React from "react";
-
-interface CoffeeShop {
-  name: string;
-  location: google.maps.LatLngLiteral;
-}
+import { CoffeeShop } from "../types";
 
 interface CoffeeShopListProps {
   shops: CoffeeShop[];
