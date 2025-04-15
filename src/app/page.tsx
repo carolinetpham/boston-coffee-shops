@@ -2,7 +2,7 @@
 import { MapProvider } from "./providers/MapProvider";
 import { MapComponent } from "./components/MapComponent";
 import CoffeeShopList from "./components/CoffeeShopList";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   interface CoffeeShop {
@@ -12,6 +12,27 @@ export default function Home() {
 
   const [selectedShop, setSelectedShop] = useState<CoffeeShop | null>(null);
   const [shops, setShops] = useState<CoffeeShop[]>([]);
+
+  const [userLocation, setUserLocation] =
+    useState<google.maps.LatLngLiteral | null>(null);
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+        },
+        (error) => {
+          console.error("Error getting user location:", error);
+        }
+      );
+    } else {
+      console.error("Geolocation is not supported by this browser.");
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
@@ -30,7 +51,13 @@ export default function Home() {
           </MapProvider>
         </div>
         <div className="w-full md:w-1/3">
-          <CoffeeShopList shops={shops} onSelectShop={setSelectedShop} />
+          {userLocation && (
+            <CoffeeShopList
+              shops={shops}
+              onSelectShop={setSelectedShop}
+              userLocation={userLocation}
+            />
+          )}
         </div>
       </div>
     </div>
