@@ -5,7 +5,7 @@ import { CoffeeShop } from "../types";
 interface CoffeeShopListProps {
   shops: CoffeeShop[];
   onSelectShop: (shop: CoffeeShop) => void;
-  userLocation: google.maps.LatLngLiteral; 
+  userLocation: google.maps.LatLngLiteral;
 }
 
 const CoffeeShopList: React.FC<CoffeeShopListProps> = ({
@@ -42,7 +42,7 @@ const CoffeeShopList: React.FC<CoffeeShopListProps> = ({
 
   return (
     <div style={{ padding: "1rem" }}>
-      <h2>Nearby Cafes</h2>
+      <h2 className="font-bold text-lg">Nearby Cafes</h2>
       <ul style={{ listStyle: "none", padding: 0 }}>
         {sortedShops.map((shop, index) => (
           <li

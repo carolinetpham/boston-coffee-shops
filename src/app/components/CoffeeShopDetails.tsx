@@ -7,15 +7,23 @@ interface Props {
 }
 
 const CoffeeShopDetails: React.FC<Props> = ({ shop }) => {
-  if (!shop) return <div style={{ padding: "1rem" }}>Select a shop to see details.</div>;
+  if (!shop) return <div className="p4">Select a shop to see details.</div>;
 
   return (
-    <div style={{ padding: "1rem", borderTop: "1px solid #ccc", marginTop: "1rem" }}>
-      <h2>{shop.name}</h2>
-      <p><strong>Address:</strong> {shop.address}</p>
-      <p><strong>Hours:</strong> {shop.hours}</p>
-      <p><strong>WiFi:</strong> {shop.wifi ? "Available" : "Not Available"}</p>
-      <p><strong>Seating:</strong> {shop.seating}</p>
+    <div className="p-4 border-t border-gray-300 mt-4">
+      <h2 className="font-bold text-lg">{shop.name}</h2>
+      <p>
+        <strong>Address:</strong> {shop.address}
+      </p>
+      <p>
+        <strong>Hours:</strong> {shop.hours}
+      </p>
+      <p>
+        <strong>WiFi:</strong> {shop.wifi ? "Available" : "Not Available"}
+      </p>
+      <p>
+        <strong>Seating:</strong> {shop.seating}
+      </p>
     </div>
   );
 };
