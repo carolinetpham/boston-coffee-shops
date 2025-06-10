@@ -31,15 +31,14 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
-      <h1 className="text-3xl font-bold mb-4 text-center">
+    <div className="bg-[#CDF0C1] min-h-screen p-6">
+      <h1 className="text-center text-5xl font-display text-[#5C3A00] drop-shadow mb-6">
         Boston Coffee Shops
       </h1>
 
-      {/* Map + List Side-by-Side */}
-      <div className="flex flex-col md:flex-row gap-6">
+      <div className="flex flex-col md:flex-row gap-4 h-full">
         {/* Map */}
-        <div className="w-full md:w-2/3">
+        <div className="flex-[3] rounded-xl overflow-hidden border border-gray-300 shadow">
           <MapProvider>
             <MapComponent
               shops={shops}
@@ -51,7 +50,7 @@ export default function Home() {
         </div>
 
         {/* Cafe List */}
-        <div className="w-full md:w-1/3 md:h-[400px] md:sticky md:top-24 overflow-y-auto">
+        <div className="flex-[2] max-h-[300px] md:max-h-[400px] overflow-y-auto">
           {userLocation && (
             <CoffeeShopList
               shops={shops}
